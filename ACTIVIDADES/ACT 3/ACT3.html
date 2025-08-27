@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arte en Canvas</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f6f6f6;
+    }
+    h1 {
+      margin: 20px 0;
+      font-size: 1.8rem;
+      color: #1d3557;
+    }
+    .contenedor {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .bloque {
+      text-align: center;
+    }
+    canvas {
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    }
+    h2 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Arte en Canvas</h1>
+
+  <div class="contenedor">
+    <div class="bloque">
+      <h2>Árbol (dibujo)</h2>
+      <canvas id="arte" width="300" height="250"></canvas>
+    </div>
+    <div class="bloque">
+      <h2>Animación</h2>
+      <canvas id="animacion" width="300" height="250"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // ----- CANVAS ARTE -----
+    const arte = document.getElementById("arte");
+    const ctxA = arte.getContext("2d");
+
+    // Fondo
+    ctxA.fillStyle = "#e0f7fa";
+    ctxA.fillRect(0, 0, arte.width, arte.height);
+
+    // Tronco (rectángulo café)
+    ctxA.fillStyle = "#8d6e63";
+    ctxA.fillRect(130, 140, 40, 80);
+
+    // Hojas (puros rectángulos verdes)
+    ctxA.fillStyle = "#4caf50";
+    ctxA.fillRect(100, 100, 100, 50);
+    ctxA.fillRect(80, 70, 140, 50);
+    ctxA.fillRect(110, 40, 80, 40);
+
+    // Césped (rectángulo verde en la base)
+    ctxA.fillStyle = "#81c784";
+    ctxA.fillRect(0, 220, arte.width, 30);
+
+
+    // ----- CANVAS ANIMACIÓN -----
+    const animacion = document.getElementById("animacion");
+    const ctxB = animacion.getContext("2d");
+
+    let x1 = 10, y1 = 30;
+    let x2 = 200, y2 = 150;
+    let dx1 = 2, dy2 = -2;
+
+    function dibujarAnimacion() {
+      ctxB.clearRect(0, 0, animacion.width, animacion.height);
+
+      // Rectángulo 1 (se mueve horizontalmente)
+      ctxB.fillStyle = "#ff6b6b";
+      ctxB.fillRect(x1, y1, 60, 40);
+
+      // Rectángulo 2 (se mueve verticalmente)
+      ctxB.fillStyle = "#4ecdc4";
+      ctxB.fillRect(x2, y2, 50, 50);
+
+      // Actualizar posiciones
+      x1 += dx1;
+      y2 += dy2;
+
+      // Rebote contra paredes
+      if (x1 + 60 > animacion.width || x1 < 0) dx1 *= -1;
+      if (y2 + 50 > animacion.height || y2 < 0) dy2 *= -1;
+
+      requestAnimationFrame(dibujarAnimacion);
+    }
+
+    dibujarAnimacion();
+  </script>
+</body>
+</html>
