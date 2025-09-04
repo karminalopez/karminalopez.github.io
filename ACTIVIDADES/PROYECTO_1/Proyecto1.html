@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Teclas Interactivas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Presiona una tecla — A, S, D, F o G</h1>
+  <p>Pulsa una de esas teclas para cambiar el icono y el texto.</p>
+
+  <div class="content">
+    <div id="icon">🌸</div>
+    <h2 id="heading">Flor</h2>
+  </div>
+
+  <script>
+    const mapping = {
+      a: { icon: "🌸", title: "Flor" },
+      s: { icon: "🏠", title: "Casa" },
+      d: { icon: "🚀", title: "Cohete" },
+      f: { icon: "🎨", title: "Paleta" },
+      g: { icon: "🌳", title: "Árbol" }
+    };
+
+    const iconEl = document.getElementById("icon");
+    const headingEl = document.getElementById("heading");
+    const descEl = document.getElementById("description");
+
+    window.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (mapping[key]) {
+        iconEl.textContent = mapping[key].icon;
+        headingEl.textContent = mapping[key].title;
+        descEl.textContent = mapping[key].desc;
+      }
+    });
+  </script>
+</body>
+</html>
