@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Arco Tangente 2 - Girar hacia el Mouse</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f0f0f0;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // Detectar posición del mouse
+    canvas.addEventListener("mousemove", e => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Calcular ángulo con atan2
+      const dx = mouseX - centerX;
+      const dy = mouseY - centerY;
+      const angle = Math.atan2(dy, dx);
+
+      // Dibujar flecha
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(angle);
+
+      ctx.fillStyle = "red";
+      ctx.fillRect(-25, -5, 50, 10); // cuerpo
+      ctx.beginPath();
+      ctx.moveTo(50, 0); // punta
+      ctx.lineTo(35, -10);
+      ctx.lineTo(35, 10);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
