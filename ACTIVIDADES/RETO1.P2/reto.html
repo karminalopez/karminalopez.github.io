@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mario Star!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url("Fondo_pagina.png"); /* Fondo amarillo de fuera */
+      background-size: cover;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      margin: 20px;
+      font-family: Arial, sans-serif;
+      color: black;
+      background: yellow;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+
+    .container {
+      position: relative;
+      width: 800px;
+      height: 450px;
+      background-image: url("Fondo_cuadro.jpg"); /* Fondo del cuadro (escenario) */
+      background-size: cover;
+      overflow: hidden;
+      border: 5px solid white;
+    }
+
+    #star {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      top: 200px; /* posición inicial vertical */
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mario Star!</h1>
+  <div class="container">
+    <img id="star" src="star.png" alt="star"> <!-- Imagen de la estrella -->
+  </div>
+
+  <audio autoplay loop>
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const star = document.getElementById("star");
+    const container = document.querySelector(".container");
+
+    let x = 0;
+    let speed = 2; // velocidad horizontal
+    let angle = 0; // ángulo para la onda seno
+
+    function animate() {
+      x += speed;
+
+      // rebotar en los lados
+      if (x <= 0 || x + star.offsetWidth >= container.offsetWidth) {
+        speed *= -1; // invertir dirección
+      }
+
+      // movimiento senoidal en Y
+      angle += 0.05; // velocidad del "vaivén"
+      const y = 200 + Math.sin(angle) * 50; // centro en 200, amplitud 50
+
+      // aplicar posiciones
+      star.style.left = x + "px";
+      star.style.top = y + "px";
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
+
