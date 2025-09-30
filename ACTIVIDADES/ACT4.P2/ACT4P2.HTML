@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolita Seno-Coseno</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff; /* fondo blanco */
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        let t = 0; // tiempo
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Propiedades de la bolita usando seno y coseno
+            const x = centerX + Math.sin(t) * 150;     // Movimiento horizontal
+            const y = centerY + Math.cos(t * 2) * 100; // Movimiento vertical
+            const radius = 20 + Math.sin(t * 3) * 10;  // Cambio de tamaño
+
+            // Dibujar la bolita
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = "#FF5733"; // color naranja
+            ctx.fill();
+            ctx.closePath();
+
+            t += 0.05; // velocidad de animación
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
