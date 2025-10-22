@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Drawing App</title>
+    <style>
+        body{
+            text-align: center;
+            background-color: rgb(188, 143, 155);
+            font-family: Arial, sans-serif;
+        }
+        .container{
+            margin: 20px auto;
+            width: 950px;
+            background: #f8f0f3;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        canvas{
+            background-color: white;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            cursor: crosshair;
+        }
+        button{
+            width: 100px;
+            height: 45px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            font: 16px impact;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover{
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        #red { background-color: #ff0000; }
+        #green { background-color: #00aa00; }
+        #blue { background-color: #0000ff; }
+        #yellow { background-color: #ffcc00; color: black; }
+        #purple { background-color: #8000ff; }
+
+        #borrar{
+            width: 300px;
+            background-color: black;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .grosor button {
+            width: 120px;
+            background-color: #333;
+        }
+
+        aside {
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        <div class="colores">
+            <button id="red" value="#ff0000">Rojo</button>
+            <button id="green" value="#00ff00">Verde</button>
+            <button id="blue" value="#0000ff">Azul</button>
+            <button id="yellow" value="#ffcc00">Amarillo</button>
+            <button id="purple" value="#8000ff">Morado</button>
+        </div>
+
+        <div class="grosor">
+            <button id="thin">Delgado</button>
+            <button id="medium">Medio</button>
+            <button id="thick">Grueso</button>
+        </div>
+
+        <button id="borrar" type="button">Borrar todo</button>
+
+        <br><br>
+        <canvas id="canvas" width="900" height="600"></canvas>
+        <aside>Haz clic o usa el trackpad para dibujar. 🎨</aside>
+    </div>
+
+    <script>
+      window.onload = function () {
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let drawing = false;
+        let color = '#000000';
+        let lineWidth = 3;
+
+        // Para capturar posición del puntero
+        function getPointerPos(e) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+          };
+        }
+
+        // Eventos compatibles con mouse y trackpad
+        canvas.addEventListener('pointerdown', (e) => {
+          drawing = true;
+          const pos = getPointerPos(e);
+          context.beginPath();
+          context.moveTo(pos.x, pos.y);
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+          if (!drawing) return;
+          const pos = getPointerPos(e);
+          context.lineTo(pos.x, pos.y);
+          context.strokeStyle = color;
+          context.lineWidth = lineWidth;
+          context.lineCap = 'round';
+          context.lineJoin = 'round';
+          context.stroke();
+        });
+
+        canvas.addEventListener('pointerup', () => drawing = false);
+        canvas.addEventListener('pointerleave', () => drawing = false);
+
+        // Cambio de color
+        document.querySelector('.colores').addEventListener('click', (event) => {
+          if (event.target.tagName === 'BUTTON') {
+            color = event.target.value;
+          }
+        });
+
+        // Cambio de grosor
+        document.querySelector('.grosor').addEventListener('click', (event) => {
+          if (event.target.id === 'thin') lineWidth = 2;
+          if (event.target.id === 'medium') lineWidth = 6;
+          if (event.target.id === 'thick') lineWidth = 12;
+        });
+
+        // Borrar todo
+        document.getElementById('borrar').addEventListener('click', () => {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+        });
+      };
+    </script>
+  </body>
+</html>
