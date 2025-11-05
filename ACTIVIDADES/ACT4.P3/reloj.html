@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reloj </title>
+<style>
+  body {
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+.clock {
+position: relative;
+width: 80vmin;  /* 🔹 Escalado automático según la pantalla */
+height: 80vmin;
+}
+
+.clock-face {
+position: absolute;
+width: 100%;
+height: 100%;
+background-image: url(circulo.png); /* Fondo del reloj */
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
+}
+
+.hand {
+position: absolute;
+width: 100%;
+height: 100%;
+top: 0;
+left: 0;
+transform-origin: 50% 50%; /* rota desde el centro exacto */
+transform: rotate(0deg);
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
+}
+
+.hour-hand {
+background-image: url(horas.png);
+}
+
+.minute-hand {
+background-image: url(Minutos.png);
+}
+
+.second-hand {
+background-image: url(segundos.png);
+} </style>
+
+</head>
+<body>
+
+<div class="clock">
+  <div class="clock-face"></div>
+  <div class="hand hour-hand"></div>
+  <div class="hand minute-hand"></div>
+  <div class="hand second-hand"></div>
+</div>
+
+<script>
+  let simulatedSeconds = 0;
+  const speedMultiplier = 10; // 🔹 Cambia esto para ajustar la velocidad general (mayor = más rápido)
+
+  function updateClock() {
+    simulatedSeconds += 1 / 60 * speedMultiplier; // avanza el tiempo simulado proporcionalmente
+
+    const seconds = simulatedSeconds % 60;
+    const minutes = (simulatedSeconds / 60) % 60;
+    const hours = (simulatedSeconds / 3600) % 12; // 12 horas = 3600 segundos simulados
+
+    const secondDeg = (seconds / 60) * 360;
+    const minuteDeg = (minutes / 60) * 360;
+    const hourDeg = (hours / 12) * 360;
+
+    document.querySelector(".second-hand").style.transform = `rotate(${secondDeg}deg)`;
+    document.querySelector(".minute-hand").style.transform = `rotate(${minuteDeg}deg)`;
+    document.querySelector(".hour-hand").style.transform = `rotate(${hourDeg}deg)`;
+
+    requestAnimationFrame(updateClock);
+  }
+
+  updateClock();
+</script>
+
+</body>
+</html>
+
