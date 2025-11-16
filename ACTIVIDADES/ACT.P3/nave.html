@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulación de Nave — Simple</title>
+  <style>
+    html,body{height:100%;margin:0;background:#000;overflow:hidden;font-family:Inter,system-ui,Arial}
+    canvas{display:block}
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    function resize(){
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
+    addEventListener('resize', resize);
+    resize();
+
+    // --- fondo de estrellitas (precomputadas) ---
+    const stars = [];
+    function regenStars(){
+      stars.length = 0;
+      const count = Math.max(40, Math.floor((canvas.width * canvas.height) / 12000));
+      for(let i=0;i<count;i++) stars.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*1.4+0.3,
+        a: Math.random()*0.6+0.4
+      });
+    }
+    regenStars();
+    addEventListener('resize', regenStars);
+
+    // --- nave (física simple) ---
+    const ship = {
+      x: canvas.width/2,
+      y: canvas.height/2,
+      vx: 0,
+      vy: 0,
+      angle: -Math.PI/2, // mirando hacia arriba
+      radius: 22
+    };
+
+    const config = {
+      thrust: 0.22,       // aceleración al aplicar propulsor
+      friction: 0.985,    // fricción global (0-1)
+      maxSpeed: 8,
+      bounceDampen: 0.28  // cuánto se amortigua al chocar
+    };
+
+    // --- mouse / trackpad ---
+    let mouseX = ship.x;
+    let mouseY = ship.y;
+    let pressing = false; // true while mouse or touch is down
+
+    addEventListener('pointermove', e=>{
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // pointerdown/up cubren mouse y touch
+    addEventListener('pointerdown', e=>{
+      pressing = true;
+      // on pointerdown also nudge a little for instant feel
+      const ang = Math.atan2(e.clientY - ship.y, e.clientX - ship.x);
+      ship.vx += Math.cos(ang) * 1.6;
+      ship.vy += Math.sin(ang) * 1.6;
+    });
+    addEventListener('pointerup', ()=> pressing = false);
+    addEventListener('pointercancel', ()=> pressing = false);
+
+    // --- actualización ---
+    function update(){
+      // orientar hacia el cursor
+      const dx = mouseX - ship.x;
+      const dy = mouseY - ship.y;
+      ship.angle = Math.atan2(dy, dx);
+
+      // propulsar SOLO mientras se mantenga presionado
+      if(pressing){
+        ship.vx += Math.cos(ship.angle) * config.thrust;
+        ship.vy += Math.sin(ship.angle) * config.thrust;
+      }
+
+      // limitar velocidad
+      const speed = Math.hypot(ship.vx, ship.vy);
+      if(speed > config.maxSpeed){
+        const s = config.maxSpeed / speed;
+        ship.vx *= s;
+        ship.vy *= s;
+      }
+
+      // aplicar fricción
+      ship.vx *= config.friction;
+      ship.vy *= config.friction;
+
+      // actualizar posición
+      ship.x += ship.vx;
+      ship.y += ship.vy;
+
+      // límites (colisión con paredes -> choque con amortiguación)
+      const r = ship.radius;
+      const W = canvas.width;
+      const H = canvas.height;
+      if(ship.x < r){ ship.x = r; ship.vx = -ship.vx * config.bounceDampen; }
+      if(ship.x > W - r){ ship.x = W - r; ship.vx = -ship.vx * config.bounceDampen; }
+      if(ship.y < r){ ship.y = r; ship.vy = -ship.vy * config.bounceDampen; }
+      if(ship.y > H - r){ ship.y = H - r; ship.vy = -ship.vy * config.bounceDampen; }
+    }
+
+    // --- dibujo ---
+    function draw(){
+      // fondo negro
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // estrellas
+      for(let i=0;i<stars.length;i++){
+        const s = stars[i];
+        ctx.globalAlpha = s.a;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // estela si hay propulsor (mientras se presiona)
+      if(pressing){
+        const tailLen = 12 + Math.random()*6;
+        ctx.save();
+        ctx.translate(ship.x, ship.y);
+        ctx.rotate(ship.angle + Math.PI); // cola detrás
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(-8, 8);
+        ctx.quadraticCurveTo(-6, 8 + tailLen/1.2, 0, 8 + tailLen);
+        ctx.quadraticCurveTo(6, 8 + tailLen/1.2, 8, 8);
+        ctx.fillStyle = 'rgba(255,165,0,0.85)';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // dibujar nave usando emoji
+      ctx.save();
+      ctx.translate(ship.x, ship.y);
+      ctx.rotate(ship.angle + Math.PI/2); // ajustar para que el emoji mire en la dirección
+      const size = ship.radius * 2.1;
+      ctx.font = size + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🚀', 0, 0);
+      ctx.restore();
+    }
+
+    // --- loop ---
+    function loop(){
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+  </script>
+</body>
+</html>
